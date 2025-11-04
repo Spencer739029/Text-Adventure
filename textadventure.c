@@ -17,15 +17,30 @@ struct Room {
     int itemCount;
 };
 
+void showMenu() {
+    printf("\n\n========== MENU ==========\n");
+    printf("1. Look around\n");
+    printf("2. Move\n");
+    printf("3. Check inventory\n");
+    printf("4. Check stats\n");
+    printf("5. Exit game\n");
+    printf("==========================\n");
+    printf("Choose an option: ");
+}
+
 int main() {
+    int choice;
+    char direction[10];
+
     // Make 5 room, with the second leading to number 3 and 4, and room 3 leading to 5
     struct Room room1, room2, room3, room4, room5;
+    struct Player player;
     room1.name = "room1";
     room1.description = "You are in a dimly lit entrance hall. A torch flickers on the wall.";
     room1.north = &room2;
     room1.east = NULL;
     room1.south = NULL;
-    room1.west = "NULL";
+    room1.west = NULL;
     room1.items[0] = "Torch";
     room1.itemCount = 1;
 
@@ -70,14 +85,66 @@ int main() {
 
     // Player has name, health, current room and inventory
     printf("Name your character:\n");
-    scanf("%11s", Player.name);
-    Player.health = 100;
-    Player.currentRoom = &room1;
+    scanf("%11s", player.name);
+    player.health = 100;
+    player.currentRoom = &room1;
     printf("\nYou find yourself in a dark mansion...\n");
     printf("You need to find your way out...\n");
-    printf("%s", room1.description);
     // Player can check inventory and stats
+    while (1) {
+        printf("\n");
+        showMenu();
+        if (scanf("%d", &choice) != 1) {
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) {}
+            printf("Invalid input.\n");
+            continue;
+        }
+
+        switch (choice) {
+            case 1:
+                printf("%s\n", player.currentRoom->description);
+                break;
+            case 2: {
+                printf("Which direction (n, e, s, w):\n");
+                if (scanf(" %9s", direction) != 1) {
+                    printf("Invalid direction.\n");
+                    break;
+                }
+                char d = direction[0];
+                if (d == 'n') {
+                    if (player.currentRoom->north) player.currentRoom = player.currentRoom->north;
+                    else printf("You can't go that way.\n");
+                } else if (d == 'e') {
+                    if (player.currentRoom->east) player.currentRoom = player.currentRoom->east;
+                    else printf("You can't go that way.\n");
+                } else if (d == 's') {
+                    if (player.currentRoom->south) player.currentRoom = player.currentRoom->south;
+                    else printf("You can't go that way.\n");
+                } else if (d == 'w') {
+                    if (player.currentRoom->west) player.currentRoom = player.currentRoom->west;
+                    else printf("You can't go that way.\n");
+                } else {
+                    printf("Unknown direction.\n");
+                }
+                break;
+            }
+            case 3:
+                printf("Inventory not implemented yet.\n");
+                break;
+            case 4:
+                printf("Name: %s\nHealth: %d\n", player.name, player.health);
+                break;
+            case 5:
+                printf("Exiting game.\n");
+                return 0;
+            default:
+                printf("Invalid option.\n");
+        }
+    }
+    return 0;
+}
+    
     // Use items in inventory
     // Save game after every move
     // Add more later
-}
